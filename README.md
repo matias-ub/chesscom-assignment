@@ -4,13 +4,28 @@ Take-home assignment for a Senior ML Engineer position at Chess.com. Predicts th
 
 ## Quickstart
 
+**1. Install uv** (if you don't have it):
 ```bash
-uv run jupyter nbconvert --to notebook --execute notebook.ipynb
-# or
-uv run python main.py
+# macOS / Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Windows (PowerShell)
+powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
-First run fetches data from the Chess.com PubAPI and caches it locally. All subsequent runs are fully offline.
+**2. Clone and run:**
+```bash
+git clone https://github.com/matias-ub/chesscom-assignment.git
+cd chesscom-assignment
+
+uv run python main.py
+# or
+uv run jupyter nbconvert --to notebook --execute notebook.ipynb
+```
+
+uv handles Python installation and all dependencies automatically — no need to create a virtualenv or run `pip install`.
+
+First run fetches data from the Chess.com PubAPI and caches it locally (~5 min). All subsequent runs are fully offline.
 
 ## Project structure
 
