@@ -77,6 +77,46 @@ def _add_tournament_points(games: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return games
 
 
+def _add_schedule_strength(games: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """
+    Compute average opponent rating faced per player BEFORE each round.
+
+    Mutates each game dict in-place, adding:
+      - white_avg_opp_rating
+      - black_avg_opp_rating
+
+    Round 1 has no prior opponents; falls back to the player's own rating.
+    Games must already be sorted by round_number (ascending).
+    """
+    rounds: dict[int, list[dict[str, Any]]] = defaultdict(list)
+    for game in games:
+        rounds[game["round_number"]].append(game)
+
+    opp_ratings: dict[str, list[int]] = defaultdict(list)
+
+    for round_num in sorted(rounds.keys()):
+        round_games = rounds[round_num]
+
+        for game in round_games:
+            w = game["white_username"].lower()
+            b = game["black_username"].lower()
+            game["white_avg_opp_rating"] = (
+                sum(opp_ratings[w]) / len(opp_ratings[w]) if opp_ratings[w] else game["white_rating"]
+            )
+            game["black_avg_opp_rating"] = (
+                sum(opp_ratings[b]) / len(opp_ratings[b]) if opp_ratings[b] else game["black_rating"]
+            )
+
+        # Update opponent history after assigning features
+        for game in round_games:
+            w = game["white_username"].lower()
+            b = game["black_username"].lower()
+            opp_ratings[w].append(game["black_rating"])
+            opp_ratings[b].append(game["white_rating"])
+
+    return games
+
+
 def build_features(games: list[dict[str, Any]]) -> pd.DataFrame:
     """
     Transform a list of raw game dicts into a feature DataFrame.
