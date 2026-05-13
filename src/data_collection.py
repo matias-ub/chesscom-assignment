@@ -114,13 +114,15 @@ def fetch_player_titles(usernames: list[str], session: requests.Session | None =
         session = _make_session()
 
     titles: dict[str, str] = {}
-    for username in usernames:
+    total = len(usernames)
+
+    for i, username in enumerate(usernames, start=1):
         key = username.lower()
         cache_path = DATA_RAW / "players" / f"{key}.json"
         data = load_cache(cache_path)
         if data is None:
             url = f"{API_BASE}/pub/player/{key}"
-            logger.debug("Fetching player profile: %s", url)
+            logger.info("Fetching player profile (%d/%d): %s", i, total, url)
             try:
                 data = get(url, session)
                 save_cache(cache_path, data)
